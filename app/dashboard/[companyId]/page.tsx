@@ -44,6 +44,7 @@ export default async function DashboardPage({
 				</div>
 				<MessageDeveloper userId="snnv" userAgent={userAgent} />
 			</div>
+			<Text size="2" color="gray">Test your queries against Whop's GraphQL API and see the response.</Text>
 			<GraphQLTester />
 		</div>
 	);
@@ -59,7 +60,7 @@ function ExplainerButton() {
 					<Text size="2">What?</Text>
 				</Button>
 			</Dialog.Trigger>
-			<Dialog.Content size="4">
+			<Dialog.Content size="4" className="m-4">
 				<section>
 					<Dialog.Title className="mb-1">
 						<Text>What is this?</Text>

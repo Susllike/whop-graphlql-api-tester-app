@@ -1,7 +1,7 @@
 "use client";
 import { Mail16 } from "@frosted-ui/icons";
 import { useIframeSdk } from "@whop/react";
-import { Button, Text } from "@whop/react/components";
+import { Button, IconButton, Text } from "@whop/react/components";
 
 export default function MessageDeveloper({ 
 	userId, 
@@ -22,9 +22,14 @@ export default function MessageDeveloper({
 	}
 	
 	return (
-		<Button onClick={() => openMessage()}>
-			<Mail16 />
-			<Text size="2">Message Developer</Text>
-		</Button>
+		<>
+			<Button className="hidden sm:flex" onClick={() => openMessage()}>
+				<Mail16 />
+				<Text size="2" >Message Developer</Text>
+			</Button>
+			<IconButton className="sm:hidden" onClick={() => openMessage()}>
+				<Mail16 />
+			</IconButton>
+		</>
 	);
 }

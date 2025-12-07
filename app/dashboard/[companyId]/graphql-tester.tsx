@@ -161,9 +161,9 @@ const response = await fetch(\`https://whop.com/api/graphql/${endpoint}\`, {
 
 	return (
 		<>
-			<div className="flex flex-row gap-4">
-				<div className="w-1/2 flex flex-col gap-2">
-					<Text size="4" weight="bold">Request</Text>
+			<div className="flex grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div className="flex flex-col gap-2">
+					<Text size="6" weight="bold">Request</Text>
 					<Card>
 						<Button 
 							variant="surface" 
@@ -325,14 +325,14 @@ const response = await fetch(\`https://whop.com/api/graphql/${endpoint}\`, {
 						</div>
 					</Card>
 				</div>
-				<div className="w-1/2 flex flex-col gap-2">
-					<Text size="4" weight="bold">Response</Text>
+				<div className="flex flex-col gap-2">
+					<Text size="6" weight="bold">Response</Text>
 					<JsonViewer data={response || {}} />
 				</div>
 			</div>
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-row items-center gap-2">
-					<Text size="4" weight="bold">History</Text>
+					<Text size="6" weight="bold">History</Text>
 					{ history.length > 0 && (
 						<AlertDialog.Root>
 							<AlertDialog.Trigger>
