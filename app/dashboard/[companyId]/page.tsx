@@ -1,4 +1,4 @@
-import { Button, Dialog, Text } from "@whop/react/components";
+import { Avatar, Button, Dialog, Text } from "@whop/react/components";
 import { headers } from "next/headers";
 import { whopsdk } from "@/lib/whop-sdk";
 import GraphQLTester from "./graphql-tester";
@@ -31,6 +31,12 @@ export default async function DashboardPage({
 		<div className="flex flex-col p-8 gap-4">
 			<div className="flex flex-row gap-4 justify-between items-center">
 				<div className="flex flex-row gap-2 items-center">
+					<Avatar 
+						size="2" 
+						src={"/favicon.ico"} 
+						fallback="GT" 
+						variant="square"
+					/>
 					<Text size="6" weight="bold">GraphQL Tester</Text>
 					<ExplainerButton />
 					{/* <WarningButton /> */}
