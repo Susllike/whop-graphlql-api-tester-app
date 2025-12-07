@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, IconButton, Text, TextArea, TextField, Tooltip } from "@whop/react/components";
+import { AlertDialog, Button, Card, IconButton, Text, TextArea, TextField, Tooltip } from "@whop/react/components";
 import { sendRequest } from "@/lib/actions/send-request";
 import { Checkmark20, Copy20, ExclamationTriangle20, InfoCircle20, TelegramFilled20 } from "@frosted-ui/icons";
 import { useState, useEffect } from "react";
@@ -334,16 +334,52 @@ const response = await fetch(\`https://whop.com/api/graphql/${endpoint}\`, {
 				<div className="flex flex-row items-center gap-2">
 					<Text size="4" weight="bold">History</Text>
 					{ history.length > 0 && (
-						<Button 
-							variant="classic" 
-							size="2" 
-							color="red" 
-							onClick={clearHistory} 
-							type="button"
-							className="ml-auto h-fit py-1"
-						>
-							<Text size="2" weight="bold">Clear History</Text>
-						</Button>
+						<AlertDialog.Root>
+							<AlertDialog.Trigger>
+								<Button 
+									variant="classic" 
+									size="2" 
+									color="red" 
+									type="button"
+									className="ml-auto h-fit py-1"
+								>
+									<Text size="2" weight="bold">Clear History</Text>
+								</Button>
+							</AlertDialog.Trigger>
+							<AlertDialog.Content size="4">
+								<AlertDialog.Title>
+									<Text size="4" weight="bold">Clear History</Text>
+								</AlertDialog.Title>
+								<AlertDialog.Description>
+									<Text size="3">Are you sure you want to clear your history?</Text>
+								</AlertDialog.Description>
+								<div className="flex flex-row justify-end gap-2">
+									<AlertDialog.Cancel>
+										<Button 
+											variant="classic" 
+											size="3" 
+											color="gray" 
+											type="button"
+											className="h-fit py-2"
+										>
+											<Text size="2" weight="bold">Cancel</Text>
+										</Button>
+									</AlertDialog.Cancel>
+									<AlertDialog.Action>
+										<Button 
+											variant="classic" 
+											size="3" 
+											color="red" 
+											onClick={clearHistory} 
+											type="button"
+											className="h-fit py-2"
+										>
+											<Text size="2" weight="bold">Confirm</Text>
+										</Button>
+									</AlertDialog.Action>
+								</div>
+							</AlertDialog.Content>
+						</AlertDialog.Root>
 					)}
 				</div>
 				<div className="flex flex-col gap-2">
