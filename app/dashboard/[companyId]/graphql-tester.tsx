@@ -2,19 +2,21 @@
 
 import { Button, Card, IconButton, Text, TextArea, TextField, Tooltip } from "@whop/react/components";
 import { sendRequest } from "@/lib/actions/send-request";
-import { Checkmark20, Copy20, InfoCircle20, TelegramFilled20 } from "@frosted-ui/icons";
+import { Checkmark20, Copy20, ExclamationTriangle20, InfoCircle20, TelegramFilled20 } from "@frosted-ui/icons";
 import { useState, useEffect } from "react";
 import { parse, print } from "graphql";
 
 export default function GraphQLTester() {
-	const [response, setResponse] = useState<any>(null);
+	const [apikey, setApikey] = useState("");
+	const [apikeyError, setApikeyError] = useState<string | null>(null);
 	const [endpoint, setEndpoint] = useState("");
-	const [variables, setVariables] = useState("");
-	const [variablesError, setVariablesError] = useState<string | null>(null);
 	const [query, setQuery] = useState("");
 	const [queryError, setQueryError] = useState<string | null>(null);
+	const [variables, setVariables] = useState("");
+	const [variablesError, setVariablesError] = useState<string | null>(null);
+	
 	const [isLoading, setIsLoading] = useState(false);
-
+	const [response, setResponse] = useState<any>(null);
 	const [history, setHistory] = useState<Array<{endpoint: string, query: string, variables: string}>>([]);
 
 	const formatJSON = () => {
@@ -157,24 +159,71 @@ const response = await fetch(\`https://whop.com/api/graphql/${endpoint}\`, {
 		setTimeout(() => setCopied(false), 750);
 	};
 
+	useEffect(() => {
+		if (apikey) {
+			setApikeyError(null);
+		} else {
+			setApikeyError("API key is required");
+		}
+	}, [apikey]);
+
 	return (
 		<>
 			<div className="flex flex-row gap-4">
 				<div className="w-1/2 flex flex-col gap-2">
 					<Text size="4" weight="bold">Request</Text>
 					<Card>
-						<IconButton 
+						<Button 
 							variant="surface" 
 							size="2" 
 							color="gray" 
 							onClick={copyRequest}
 							className="absolute top-2 right-2"
 						>
-							{copied ? <Checkmark20 /> : <Copy20 />}
-						</IconButton>
+							{copied ? (
+								<>
+									<Checkmark20 />
+									<Text size="2">Copied!</Text>
+								</>
+							) : (
+								<>
+									<Copy20 />
+									<Text size="2">Copy JS Request</Text>
+								</>
+							)}
+						</Button>
 						<div className="flex flex-col gap-4">
 							<form onSubmit={handleSubmit}>
 								<div className="flex flex-col gap-4">
+									<div className="flex flex-col gap-2">
+										<label htmlFor="apikey" className="flex flex-col items-start gap-2">
+											<div className="flex flex-row gap-1 items-center">
+												<Text size="4" weight="bold">API Key *</Text>
+											</div>
+											<Text size="2" color="gray">The API key to use for the request. The key is only used to authenticate the request and is not stored anywhere.</Text>
+										</label>
+										<TextField.Root>
+											<TextField.Input
+												name="apikey" 
+												placeholder="apik_..."
+												value={apikey}
+												onChange={(e) => setApikey(e.target.value)}
+												required
+												type="password"
+												style={{
+													fontSize: "16px",
+													fontFamily: "monospace",
+												}}
+											/>
+										</TextField.Root>
+										{apikeyError && (
+											<Text size="2" color="red" className="flex items-center gap-1">
+												<ExclamationTriangle20 />
+												{apikeyError}
+											</Text>
+										)}
+									</div>
+									
 									<div className="flex flex-col gap-2">
 										<label htmlFor="endpoint" className="flex flex-col items-start gap-2">
 											<div className="flex flex-row gap-1 items-center">
@@ -200,78 +249,77 @@ const response = await fetch(\`https://whop.com/api/graphql/${endpoint}\`, {
 										</TextField.Root>
 									</div>
 
-								<div className="flex flex-col gap-2">
-									<div className="flex flex-row items-center gap-2">
-										<label htmlFor="query">
-											<Text size="4" weight="bold">GraphQL Query *</Text>
-										</label>
-										<Button variant="surface" size="2" color="gray" onClick={formatGraphQL} type="button">
-											Format Query
+									<div className="flex flex-col gap-2">
+										<div className="flex flex-row items-center gap-2">
+											<label htmlFor="query">
+												<Text size="4" weight="bold">GraphQL Query *</Text>
+											</label>
+											<Button variant="surface" size="2" color="gray" onClick={formatGraphQL} type="button">
+												Format Query
+											</Button>
+										</div>
+										<TextArea 
+											name="query" 
+											placeholder="Query" 
+											rows={10}
+											value={query}
+											onChange={handleQueryChange}
+											required
+											style={{
+												fontFamily: "monospace",
+											}}
+											spellCheck={false}
+										/>
+										{queryError && (
+											<Text size="2" color="red" className="flex items-center gap-1">
+												<ExclamationTriangle20 />
+												{queryError}
+											</Text>
+										)}
+									</div>
+
+									<div className="flex flex-col gap-2">
+										<div className="flex flex-row items-center gap-2">
+											<label htmlFor="variables">
+												<Text size="4" weight="bold">Variables</Text>
+											</label>
+											<Button variant="surface" size="2" color="gray" onClick={formatJSON} type="button">
+												Format JSON
+											</Button>
+										</div>
+										<TextArea 
+											name="variables" 
+											placeholder='{"key": "value"}'
+											rows={10}
+											value={variables}
+											onChange={handleVariablesChange}
+											style={{
+												fontFamily: "monospace",
+											}}
+											spellCheck={false}
+										/>
+										{variablesError && (
+											<Text size="2" color="red" className="flex items-center gap-1">
+												<ExclamationTriangle20 />
+												{variablesError}
+											</Text>
+										)}
+									</div>
+
+									<div className="flex flex-row gap-2 w-full">
+										<Button 
+											type="submit" 
+											variant="classic" 
+											size="2" 
+											color="blue" 
+											className="flex-1 gap-1"
+											disabled={isLoading || !!variablesError || !!queryError || !!apikeyError}
+											loading={isLoading}
+										>
+											{isLoading ? "Sending..." : "Send Request"}
+											<TelegramFilled20 />
 										</Button>
 									</div>
-									<TextArea 
-										name="query" 
-										placeholder="Query" 
-										rows={10}
-										value={query}
-										onChange={handleQueryChange}
-										required
-										style={{
-											fontFamily: "monospace",
-										}}
-										spellCheck={false}
-									/>
-									{queryError && (
-										<Text size="2" color="red" className="flex items-center gap-1">
-											<InfoCircle20 />
-											{queryError}
-										</Text>
-									)}
-								</div>
-
-								<div className="flex flex-col gap-2">
-									<div className="flex flex-row items-center gap-2">
-										<label htmlFor="variables">
-											<Text size="4" weight="bold">Variables</Text>
-										</label>
-										<Button variant="surface" size="2" color="gray" onClick={formatJSON} type="button">
-											Format JSON
-										</Button>
-									</div>
-									<TextArea 
-										name="variables" 
-										placeholder='{"key": "value"}'
-										rows={10}
-										value={variables}
-										onChange={handleVariablesChange}
-										style={{
-											fontFamily: "monospace",
-										}}
-										spellCheck={false}
-									/>
-									{variablesError && (
-										<Text size="2" color="red" className="flex items-center gap-1">
-											<InfoCircle20 />
-											{variablesError}
-										</Text>
-									)}
-								</div>
-
-								<div className="flex flex-row gap-2 w-full">
-									<Button 
-										type="submit" 
-										variant="classic" 
-										size="2" 
-										color="blue" 
-										className="flex-1 gap-1"
-										disabled={isLoading || !!variablesError || !!queryError}
-										loading={isLoading}
-									>
-										{isLoading ? "Sending..." : "Send Request"}
-										<TelegramFilled20 />
-									</Button>
-								</div>
-
 								</div>
 							</form>
 						</div>

@@ -13,7 +13,7 @@ export async function sendRequest(formData: FormData) {
 
 	console.log("Raw form data:", rawFormData);
 
-	const { query, endpoint, variables } = rawFormData;
+	const { query, endpoint, variables, apikey } = rawFormData;
 
 	console.log("Query:", query);
 
@@ -21,7 +21,7 @@ export async function sendRequest(formData: FormData) {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			"Authorization": `Bearer ${process.env.WHOP_API_KEY}`,
+			"Authorization": `Bearer ${apikey}`,
 		},
 		body: JSON.stringify({
 			query: query,
