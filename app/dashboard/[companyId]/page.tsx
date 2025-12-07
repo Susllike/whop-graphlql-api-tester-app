@@ -81,12 +81,13 @@ function ExplainerButton() {
 						<Text>How do I use this?</Text>
 					</Dialog.Title>
 					<Dialog.Description className="flex flex-col gap-2">
-						<Text>1. Enter the endpoint and operation name<br /></Text>
-						<Text>2. Enter the GraphQL query ( you'll probably need to know the schema to do this. Up to you to figure it out. )<br /></Text>
-						<Text>3. Enter the variables<br /></Text>
-						<Text>4. Click "Send Request"<br /></Text>
-						<Text>5. See the response in the response section<br /></Text>
-						<Text>6. Repeat until desired outcome.<br /></Text>
+						<Text>1. Enter the API key ( you can use the company API key or another app's if needed )<br /></Text>
+						<Text>2. Enter the endpoint and operation name<br /></Text>
+						<Text>3. Enter the GraphQL query ( you'll probably need to know the schema to do this. Up to you to figure it out. )<br /></Text>
+						<Text>4. Enter the variables<br /></Text>
+						<Text>5. Click "Send Request"<br /></Text>
+						<Text>6. See the response in the response section<br /></Text>
+						<Text>7. Repeat until desired outcome.<br /></Text>
 					</Dialog.Description>
 				</section>
 				<Dialog.Close>
