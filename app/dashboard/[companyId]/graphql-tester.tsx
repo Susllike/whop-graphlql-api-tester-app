@@ -159,14 +159,6 @@ const response = await fetch(\`https://whop.com/api/graphql/${endpoint}\`, {
 		setTimeout(() => setCopied(false), 750);
 	};
 
-	useEffect(() => {
-		if (apikey) {
-			setApikeyError(null);
-		} else {
-			setApikeyError("API key is required");
-		}
-	}, [apikey]);
-
 	return (
 		<>
 			<div className="flex flex-row gap-4">
@@ -207,7 +199,15 @@ const response = await fetch(\`https://whop.com/api/graphql/${endpoint}\`, {
 												name="apikey" 
 												placeholder="apik_..."
 												value={apikey}
-												onChange={(e) => setApikey(e.target.value)}
+												onChange={(e) => {
+													setApikey(e.target.value);
+													if (!e.target.value) {
+														setApikeyError("API key is required");
+													}
+													else {
+														setApikeyError(null);
+													}
+												}}
 												required
 												type="password"
 												style={{
