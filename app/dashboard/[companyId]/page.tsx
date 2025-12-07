@@ -1,16 +1,22 @@
-import { Button } from "@whop/react/components";
+import { Button, Dialog, Text } from "@whop/react/components";
 import { headers } from "next/headers";
-import Link from "next/link";
 import { whopsdk } from "@/lib/whop-sdk";
+import GraphQLTester from "./graphql-tester";
+import MessageDeveloper from "./message-developer";
+import { ExclamationTriangle20, Gear20, QuestionCircle20 } from "@frosted-ui/icons";
 
 export default async function DashboardPage({
 	params,
 }: {
 	params: Promise<{ companyId: string }>;
 }) {
+	const headersList = await headers();
+
 	const { companyId } = await params;
 	// Ensure the user is logged in on whop.
-	const { userId } = await whopsdk.verifyUserToken(await headers());
+	const { userId } = await whopsdk.verifyUserToken(headersList);
+
+	const userAgent = headersList.get('user-agent') ?? ""
 
 	// Fetch the neccessary data we want from whop.
 	const [company, user, access] = await Promise.all([
@@ -18,43 +24,132 @@ export default async function DashboardPage({
 		whopsdk.users.retrieve(userId),
 		whopsdk.users.checkAccess(companyId, { id: userId }),
 	]);
-
+	
 	const displayName = user.name || `@${user.username}`;
 
 	return (
 		<div className="flex flex-col p-8 gap-4">
-			<div className="flex justify-between items-center gap-4">
-				<h1 className="text-9">
-					Hi <strong>{displayName}</strong>!
-				</h1>
-				<Link href="https://docs.whop.com/apps" target="_blank">
-					<Button variant="classic" className="w-full" size="3">
-						Developer Docs
-					</Button>
-				</Link>
+			<div className="flex flex-row gap-4 justify-between items-center">
+				<div className="flex flex-row gap-2 items-center">
+					<Text size="6" weight="bold">GraphQL Tester</Text>
+					<ExplainerButton />
+					{/* <WarningButton /> */}
+					{/* <SettingsButton /> */}
+				</div>
+				<MessageDeveloper userId="snnv" userAgent={userAgent} />
 			</div>
-
-			<p className="text-3 text-gray-10">
-				Welcome to you whop app! Replace this template with your own app. To
-				get you started, here's some helpful data you can fetch from whop.
-			</p>
-
-			<h3 className="text-6 font-bold">Company data</h3>
-			<JsonViewer data={company} />
-
-			<h3 className="text-6 font-bold">User data</h3>
-			<JsonViewer data={user} />
-
-			<h3 className="text-6 font-bold">Access data</h3>
-			<JsonViewer data={access} />
+			<GraphQLTester />
 		</div>
 	);
 }
 
-function JsonViewer({ data }: { data: any }) {
+
+function ExplainerButton() {
 	return (
-		<pre className="text-2 border border-gray-a4 rounded-lg p-4 bg-gray-a2 max-h-72 overflow-y-auto">
-			<code className="text-gray-10">{JSON.stringify(data, null, 2)}</code>
-		</pre>
+		<Dialog.Root>
+			<Dialog.Trigger>
+				<Button variant="surface" size="2" color="gray" className="flex flex-row gap-1 items-center">
+					<QuestionCircle20 />
+					<Text size="2">What?</Text>
+				</Button>
+			</Dialog.Trigger>
+			<Dialog.Content size="4">
+				<section>
+					<Dialog.Title className="mb-1">
+						<Text>What is this?</Text>
+					</Dialog.Title>
+					<Dialog.Description>
+						<Text>This is a tool that allows you to test your GraphQL queries against Whop's API and see the response.</Text>
+					</Dialog.Description>					
+				</section>
+				<section>
+					<Dialog.Title className="mb-1">
+						<Text>Why is this?</Text>
+					</Dialog.Title>
+					<Dialog.Description>
+						<Text>To make developers' lives easier. Maybe even yours!</Text>
+					</Dialog.Description>
+				</section>
+				<section>
+					<Dialog.Title className="mb-1">
+						<Text>How do I use this?</Text>
+					</Dialog.Title>
+					<Dialog.Description className="flex flex-col gap-2">
+						<Text>1. Enter the endpoint and operation name<br /></Text>
+						<Text>2. Enter the GraphQL query ( you'll probably need to know the schema to do this. Up to you to figure it out. )<br /></Text>
+						<Text>3. Enter the variables<br /></Text>
+						<Text>4. Click "Send Request"<br /></Text>
+						<Text>5. See the response in the response section<br /></Text>
+						<Text>6. Repeat until desired outcome.<br /></Text>
+					</Dialog.Description>
+				</section>
+				<Dialog.Close>
+					<Button variant="surface" size="2" color="gray" className="flex flex-row gap-1 items-center w-full">
+						<Text size="2">Close</Text>
+					</Button>
+				</Dialog.Close>
+			</Dialog.Content>
+		</Dialog.Root>
+	);
+}
+
+function WarningButton() {
+	return (
+		<Dialog.Root>
+			<Dialog.Trigger>
+				<Button variant="soft" size="2" color="red" className="flex flex-row gap-1 items-center">
+					<ExclamationTriangle20 />
+					<Text size="2">Disclaimer</Text>
+				</Button>
+			</Dialog.Trigger>
+			<Dialog.Content size="4" className="bg-red-3">
+				<section>
+					<Dialog.Title className="mb-1">
+						<Text>Disclaimer</Text>
+					</Dialog.Title>
+					<Dialog.Description>
+						<Text>This tool is provided as-is, without any warranty. Use at your own risk.</Text>
+					</Dialog.Description>					
+				</section>
+				<Dialog.Close>
+					<Button variant="soft" size="2" color="red" className="flex flex-row gap-1 items-center w-full">
+						<Text size="2">Close</Text>
+					</Button>
+				</Dialog.Close>
+			</Dialog.Content>
+		</Dialog.Root>
+	);
+}
+
+function SettingsButton() {
+	return (
+		<Dialog.Root>
+			<Dialog.Trigger>
+				<Button 
+					variant="surface" 
+					size="2" 
+					color="gray" 
+					className="flex flex-row gap-1 items-center"
+				>
+					<Gear20 />
+					<Text size="2">Settings</Text>
+				</Button>
+			</Dialog.Trigger>
+			<Dialog.Content size="4">
+				<section>
+					<Dialog.Title className="mb-1">
+						<Text>Settings</Text>
+					</Dialog.Title>
+					<Dialog.Description>
+						<Text>No settings yet. Maybe in the future.</Text>
+					</Dialog.Description>					
+				</section>
+				<Dialog.Close>
+					<Button variant="surface" size="2" color="gray" className="flex flex-row gap-1 items-center w-full">
+						<Text size="2">Close</Text>
+					</Button>
+				</Dialog.Close>
+			</Dialog.Content>
+		</Dialog.Root>
 	);
 }

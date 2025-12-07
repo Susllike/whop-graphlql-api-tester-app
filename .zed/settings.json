@@ -3,6 +3,6 @@
 		"source.fixAll.biome": true,
 		"source.action.useSortedKeys.biome": true
 	},
-	"tab_size": 3,
+	"tab_size": 4,
 	"hard_tabs": true
 }

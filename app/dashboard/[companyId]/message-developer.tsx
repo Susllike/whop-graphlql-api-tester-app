@@ -10,11 +10,9 @@ export default function MessageDeveloper({
 	userId: string, 
 	userAgent: string 
 }) {
-	const isMobile = userAgent && /Mobile|Android|iPhone|iPad|Tablet/i.test(userAgent);
-
-	console.log("Is mobile:", isMobile);
-
 	const iframeSdk = useIframeSdk();
+	
+	const isMobile = userAgent && /Mobile|Android|iPhone|iPad|Tablet/i.test(userAgent);
 	
 	function openMessage() {
 		iframeSdk.openExternalUrl({ 

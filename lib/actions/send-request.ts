@@ -1,6 +1,14 @@
 "use server";
 
+import { headers } from "next/headers";
+import { whopsdk } from "../whop-sdk";
+
 export async function sendRequest(formData: FormData) {
+	const headersList = await headers();
+
+	// Ensure the user is logged in on whop.
+	const { userId } = await whopsdk.verifyUserToken(headersList);
+
 	const rawFormData = Object.fromEntries(formData);
 
 	console.log("Raw form data:", rawFormData);

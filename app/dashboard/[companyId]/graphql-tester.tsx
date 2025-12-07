@@ -1,9 +1,8 @@
 "use client";
 
-import { Avatar, Button, Card, Checkbox, IconButton, Popover, Select, Text, TextArea, TextField, Tooltip } from "@whop/react/components";
+import { Button, Card, IconButton, Text, TextArea, TextField, Tooltip } from "@whop/react/components";
 import { sendRequest } from "@/lib/actions/send-request";
-import { MemberListResponse } from "@whop/sdk/resources/members";
-import { Copy20, InfoCircle20, PaperAirplaneFilled16, PaperAirplaneUpFilled16, Pencil16, Pencil20, Plane16, Telegram20, TelegramFilled20, Trash20, TrashFilled20, XMark20 } from "@frosted-ui/icons";
+import { Checkmark20, Copy20, InfoCircle20, TelegramFilled20 } from "@frosted-ui/icons";
 import { useState, useEffect } from "react";
 import { parse, print } from "graphql";
 
@@ -134,12 +133,45 @@ export default function GraphQLTester() {
 		setIsLoading(false);
 	};
 
+	const [copied, setCopied] = useState(false);
+	
+	const copyRequest = () => {
+		// Padding mostly messed up here because of the end-result formatting.
+		const codeSnippet = `
+const response = await fetch(\`https://whop.com/api/graphql/${endpoint}\`, {
+	method: "POST",
+	headers: {
+		"Content-Type": "application/json",
+		"Authorization": \`Bearer \${process.env.WHOP_API_KEY}\`,
+	},
+	body: JSON.stringify({
+		query: \`
+		${query.trim().split('\n').join('\n\t\t')}
+		\`,
+		variables: ${variables.split('\n').join('\n\t\t') || '{}'},
+		operationName: "${endpoint}"
+	})
+}).then(res => res.json())`.trim();
+		navigator.clipboard.writeText(codeSnippet);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 750);
+	};
+
 	return (
 		<>
 			<div className="flex flex-row gap-4">
 				<div className="w-1/2 flex flex-col gap-2">
 					<Text size="4" weight="bold">Request</Text>
 					<Card>
+						<IconButton 
+							variant="surface" 
+							size="2" 
+							color="gray" 
+							onClick={copyRequest}
+							className="absolute top-2 right-2"
+						>
+							{copied ? <Checkmark20 /> : <Copy20 />}
+						</IconButton>
 						<div className="flex flex-col gap-4">
 							<form onSubmit={handleSubmit}>
 								<div className="flex flex-col gap-4">
@@ -184,6 +216,10 @@ export default function GraphQLTester() {
 										value={query}
 										onChange={handleQueryChange}
 										required
+										style={{
+											fontFamily: "monospace",
+										}}
+										spellCheck={false}
 									/>
 									{queryError && (
 										<Text size="2" color="red" className="flex items-center gap-1">
@@ -208,6 +244,10 @@ export default function GraphQLTester() {
 										rows={10}
 										value={variables}
 										onChange={handleVariablesChange}
+										style={{
+											fontFamily: "monospace",
+										}}
+										spellCheck={false}
 									/>
 									{variablesError && (
 										<Text size="2" color="red" className="flex items-center gap-1">
@@ -289,9 +329,14 @@ export default function GraphQLTester() {
 }
 
 function JsonViewer({ data }: { data: any }) {
+	const [copied, setCopied] = useState(false);
+	
 	const copyResponse = () => {
 		navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+		setCopied(true);
+		setTimeout(() => setCopied(false), 750);
 	};
+	
 	return (
 		<Card className="h-full">
 			<IconButton 
@@ -301,9 +346,9 @@ function JsonViewer({ data }: { data: any }) {
 				onClick={copyResponse}
 				className="absolute top-2 right-2"
 			>
-				<Copy20 />
+				{copied ? <Checkmark20 /> : <Copy20 />}
 			</IconButton>
-			<pre>
+			<pre className="overflow-x-auto h-full w-full">
 				<code className="text-gray-10">{JSON.stringify(data, null, 4)}</code>
 			</pre>
 		</Card>
